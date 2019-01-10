@@ -12,8 +12,8 @@ imgs = ['VAZ1_201709290652_001_0037_L1A', 'VAZ1_201709290652_001_0053_L1A', 'VAZ
         'VBZ1_201711231528_002_0102_L1A', 'VBZ1_201711251154_001_0046_L1A', 'VBZ1_201711260636_001_0074_L1A']
 img_path = '../data/Origin/'
 
-col_step = 50
-row_step = 50
+col_step = 200
+row_step = 200
 size = 1024
 
 def gen_data(obj_type):
