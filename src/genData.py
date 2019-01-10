@@ -23,19 +23,17 @@ def gen_data(obj_type):
         print(img)
         mask_file = img_path + img + '_' + obj_type + '.tif'
         if not os.path.exists(mask_file):
+            print('  file does not exist.')
             continue
         mask = tifffile.imread(mask_file)
         tif = tifffile.imread(img_path + img + '.tif')
-
         temp = tif[:, :, 0] + tif[:, :, 1] + tif[:, :, 2]
-        tif_gray = np.zeros(temp.shape, dtype=np.uint8)
-        tif_gray[np.where(temp == 0)] = 255
 
         width, height = tif.shape[:2]
 
         for j in tqdm.tqdm(range(0, width, col_step)):
             for i in range(0, height, row_step):
-                ttg = tif_gray[j:j + size, i:i + size]
+                ttg = temp[j:j + size, i:i + size]
                 if np.sum(ttg == 0) >= 5:
                     continue
                 tt = tif[j:j + size, i:i + size]
