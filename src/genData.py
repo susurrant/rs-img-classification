@@ -34,8 +34,6 @@ def gen_data(obj_type):
         width, height = tif.shape[:2]
 
         for j in tqdm.tqdm(range(0, width, col_step)):
-            if j % 500 == 0:
-                print('rows:', j)
             for i in range(0, height, row_step):
                 ttg = tif_gray[j:j + size, i:i + size]
                 if np.sum(ttg == 0) >= 5:
