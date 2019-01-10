@@ -4,7 +4,7 @@ import numpy as np
 import tifffile
 
 
-img = tifffile.imread('VAZ1_201709291702_001_0023_L1A.tif')
+img = tifffile.imread('678.tif')
 a = img[:,:,0]+img[:,:,1]+img[:,:,2]
 b = np.zeros(a.shape, dtype=np.uint8)
 b[np.where(a == 0)] = 255
