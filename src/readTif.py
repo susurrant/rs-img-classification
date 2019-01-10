@@ -1,30 +1,17 @@
+
 import cv2
 import numpy as np
 import tifffile
 
-img = cv2.imread('../data/VBZ1_201711251154_001_0046_L1A.tif')
-print(img.shape)
 
-'''
-v = set()
+img = tifffile.imread('VAZ1_201711261310_001_0050_L1A.tif')
+a = img[:,:,0]+img[:,:,1]+img[:,:,2]
+b = np.zeros(a.shape, dtype=np.uint8)
+b[np.where(a == 0)] = 255
 
-for i in range(img.shape[0]):
-    for j in range(img.shape[1]):
-        for k in range(3):
-            v.add(img[i,j,k])
-print(v)
-'''
-tem = img[:,:,0]
-tem[np.where(tem==0)] = 255
+print(img.shape, np.max(img))
 
-#cv2.imwrite('gray.jpg', img)
 cv2.namedWindow("Image")
-cv2.imshow("Image", img[:,:])
+cv2.imshow("Image", cv2.resize(b, (img.shape[0]//10, img.shape[1]//10)))
 cv2.waitKey (0)
 cv2.destroyAllWindows()
-
-'''
-img = tifffile.imread('Raster_Airport.tif')
-print(img.shape, np.max(img))
-print(img[100])
-'''
