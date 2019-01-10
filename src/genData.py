@@ -1,6 +1,7 @@
 
 
 import os
+import tqdm
 import numpy as np
 import tifffile
 
@@ -19,6 +20,7 @@ def gen_data(obj_type):
     img_id = 0
     data_path = '../data/' + obj_type + '/'
     for img in imgs:
+        print(img)
         mask_file = img_path + img + '_' + obj_type + '.tif'
         if not os.path.exists(mask_file):
             continue
@@ -31,7 +33,7 @@ def gen_data(obj_type):
 
         width, height = tif.shape[:2]
 
-        for j in range(0, width, col_step):
+        for j in tqdm.tqdm(range(0, width, col_step)):
             if j % 500 == 0:
                 print('rows:', j)
             for i in range(0, height, row_step):
