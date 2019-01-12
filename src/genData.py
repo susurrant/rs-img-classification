@@ -1,6 +1,6 @@
 
 
-import os
+import os, shutil
 import tqdm
 import numpy as np
 import tifffile
@@ -18,6 +18,9 @@ img_path = '../data/Origin/'
 def gen_data(obj_type, col_step, row_step, size):
     img_id = 0
     data_path = '../data/' + obj_type + '/'
+    shutil.rmtree(data_path)
+    os.mkdir(data_path)
+    
     for img in imgs:
         print(img)
         mask_file = img_path + img + '_' + obj_type + '.tif'
@@ -25,15 +28,16 @@ def gen_data(obj_type, col_step, row_step, size):
             print('  file does not exist.')
             continue
         mask = tifffile.imread(mask_file)
+        width, height = mask.shape
+        if width < size or height < size:
+            continue
+
         tif = tifffile.imread(img_path + img + '.tif')
         temp = tif[:, :, 0] + tif[:, :, 1] + tif[:, :, 2]
-
-        width, height = tif.shape[:2]
-
-        for j in tqdm.tqdm(range(0, width, col_step)):
-            for i in range(0, height, row_step):
+        for j in tqdm.tqdm(range(0, width - size + 1, col_step)):
+            for i in range(0, height - size + 1, row_step):
                 ttg = temp[j:j + size, i:i + size]
-                if np.sum(ttg == 0) >= 5:
+                if j + size > width or i + size > height or np.sum(ttg == 0) >= 5:
                     continue
                 tt = tif[j:j + size, i:i + size]
                 tm = mask[j:j + size, i:i + size]
