@@ -4,6 +4,8 @@ import os
 import tqdm
 import numpy as np
 import tifffile
+import argparse
+
 
 obj_types = ['Airport', 'Baresoil', 'Building', 'Farmland', 'Road', 'Vegetation', 'Water']
 imgs = ['VAZ1_201709290652_001_0037_L1A', 'VAZ1_201709290652_001_0053_L1A', 'VAZ1_201709291702_001_0023_L1A',
@@ -12,11 +14,8 @@ imgs = ['VAZ1_201709290652_001_0037_L1A', 'VAZ1_201709290652_001_0053_L1A', 'VAZ
         'VBZ1_201711231528_002_0102_L1A', 'VBZ1_201711251154_001_0046_L1A', 'VBZ1_201711260636_001_0074_L1A']
 img_path = '../data/Origin/'
 
-col_step = 100
-row_step = 100
-size = 1024
 
-def gen_data(obj_type):
+def gen_data(obj_type, col_step, row_step, size):
     img_id = 0
     data_path = '../data/' + obj_type + '/'
     for img in imgs:
@@ -44,34 +43,10 @@ def gen_data(obj_type):
 
 
 if __name__ == '__main__':
-    gen_data(obj_types[2])
-
-
-'''
-tif = tifffile.imread(path + 'VAZ1_201709291702_001_0023_L1A.tif')
-tif_gray = cv2.imread(path + 'VAZ1_201709291702_001_0023_L1A.tif', cv2.IMREAD_GRAYSCALE)
-mask = cv2.imread(path + 'VAZ1_201709291702_001_0023_L1A_mask.tif')
-mask = cv2.resize(mask, tif_gray.shape[::-1])
-print(tif.shape, tif_gray.shape, mask.shape)
-
-width, height = tif_gray.shape[:2]
-
-col_step = 50
-row_step = 50
-size = 1024
-img_id = 0
-
-for j in range(0, width, col_step):
-    if j%500 == 0:
-        print('rows:', j)
-    for i in range(0, height, row_step):
-        ttg = tif_gray[j:j+size,i:i+size]
-        if np.sum(ttg==0) >= 5:
-            continue
-        tt = tif[j:j+size, i:i+size]
-        tm = mask[j:j+size,i:i+size]
-        tifffile.imsave(path + 'data/' + str(img_id) + '.tif', tt)
-        tifffile.imsave(path + 'data/' + str(img_id) + '_mask.tif', tm)
-        img_id += 1
-'''
-
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-t', 'type', help='object type', type=str)
+    parser.add_argument('-c', '--col_step', help='column step', const=100, type=int)
+    parser.add_argument('-r', '--row_step', help='row step', const=100, type=int)
+    parser.add_argument('-s', '--size', help='image size', const=1024, type=int)
+    args = parser.parse_args()
+    gen_data(obj_types[2], args.col_step, args.row_step, args.size)
