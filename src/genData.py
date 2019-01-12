@@ -53,4 +53,4 @@ if __name__ == '__main__':
     parser.add_argument('r', help='row step', type=int) #default: 100
     parser.add_argument('s', help='image size', type=int) #default: 1024
     args = parser.parse_args()
-    gen_data(args.type, args.col_step, args.row_step, args.size)
+    gen_data(args.t, args.c, args.r, args.s)
