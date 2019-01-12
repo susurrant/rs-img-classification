@@ -20,7 +20,7 @@ def gen_data(obj_type, col_step, row_step, size):
     data_path = '../data/' + obj_type + '/'
     shutil.rmtree(data_path)
     os.mkdir(data_path)
-    
+
     for img in imgs:
         print(img)
         mask_file = img_path + img + '_' + obj_type + '.tif'
@@ -48,7 +48,7 @@ def gen_data(obj_type, col_step, row_step, size):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('-t', 'type', help='object type', type=str)
+    parser.add_argument('t', 'type', help='object type', type=str)
     parser.add_argument('-c', '--col_step', help='column step', const=100, type=int)
     parser.add_argument('-r', '--row_step', help='row step', const=100, type=int)
     parser.add_argument('-s', '--size', help='image size', const=1024, type=int)
