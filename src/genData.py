@@ -48,9 +48,9 @@ def gen_data(obj_type, col_step, row_step, size):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('-t', '-type', help='object type', type=str)
-    parser.add_argument('-c', '-col_step', help='column step', type=int) #default: 100
-    parser.add_argument('-r', '-row_step', help='row step', type=int) #default: 100
-    parser.add_argument('-s', '-size', help='image size', type=int) #default: 1024
+    parser.add_argument('t', help='object type', type=str)
+    parser.add_argument('c', help='column step', type=int) #default: 100
+    parser.add_argument('r', help='row step', type=int) #default: 100
+    parser.add_argument('s', help='image size', type=int) #default: 1024
     args = parser.parse_args()
-    gen_data(obj_types[2], args.col_step, args.row_step, args.size)
+    gen_data(args.type, args.col_step, args.row_step, args.size)
