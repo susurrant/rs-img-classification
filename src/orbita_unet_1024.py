@@ -4,9 +4,7 @@ from __future__ import division
 import os
 
 os.system('export LD_LIBRARY_PATH=/usr/local/cuda-8.0/lib64')
-
 os.environ['KERAS_BACKEND']='tensorflow'
-
 os.environ['PATH']='/usr/local/cuda-8.0/bin'
 os.environ['LD_LIBRARY_PATH']='/usr/local/cuda-8.0/lib64'
 
@@ -51,14 +49,18 @@ num_mask_channels = 1
 def arg_parser():
     parser = argparse.ArgumentParser()
 
-    parser.add_argument('--category', type=int, default=1,
+    parser.add_argument('--category', type=int, default=3,            # default is Building
                         help='Choose the segmentation category')
     parser.add_argument('--resume', type=int, default=0,
                         help='resume the weights or not')
-    parser.add_argument('--weight_path', type=str, default="../checkpoints/0Building/weights.182-0.49.hdf5",
+    parser.add_argument('--weight_path', type=str, default="../checkpoints/3Building/weights.182-0.49.hdf5",
                         help='weights path to resume')
-    parser.add_argument('--lr', type=float, default=1e-3,
+    parser.add_argument('--lr', type=float, default=1e-1,
                         help='learning rate for the model')
+    parser.add_argument('--batch_size', type=int, default=4,
+                        help='batch size')
+    parser.add_argument('--num_epoch', type=int, default=8,
+                        help='numer of epoch')
 
     return parser.parse_args()
 
@@ -314,14 +316,14 @@ def split_dataset(root):
 
 
 if __name__ == '__main__':
+    args = arg_parser()
+
     now = datetime.datetime.now()
     root = '../data/Building'
     mask_channel = 1
-    batch_size = 4
-    nb_epoch = 8
-    category = 3  # building
-    resume = 0
-    resume_path = ''
+    batch_size = args.batch_size
+    nb_epoch = args.num_epoch
+    category = args.category
 
     class_names = {
         0: 'Airplane',
@@ -368,9 +370,9 @@ if __name__ == '__main__':
         )
     ]
 
-    if resume:
+    if args.resume:
         model = load_model(
-            resume_path,
+            args.weight_path,
             custom_objects={
                 u'jaccard_coef_loss': jaccard_coef_loss,
                 u'jaccard_coef_int': jaccard_coef_int
@@ -380,7 +382,7 @@ if __name__ == '__main__':
         model = get_unet0()
 
         model.compile(
-            optimizer=Nadam(lr=1e-1),
+            optimizer=Nadam(lr=args.lr),
             loss=jaccard_coef_loss,
             metrics=['binary_crossentropy', jaccard_coef_int, 'binary_accuracy']
         )
