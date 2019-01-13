@@ -41,6 +41,7 @@ def gen_data(obj_type, col_step, row_step, size):
                     continue
                 tt = tif[j:j + size, i:i + size]
                 tm = mask[j:j + size, i:i + size]
+                tm[np.where(tm != 0)] = 1
                 tifffile.imsave(data_path + str(img_id) + '.tif', tt)
                 tifffile.imsave(data_path + str(img_id) + '_mask.tif', tm)
                 img_id += 1
@@ -49,8 +50,8 @@ def gen_data(obj_type, col_step, row_step, size):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('t', help='object type', type=str)
-    parser.add_argument('c', help='column step', type=int) #default: 100
-    parser.add_argument('r', help='row step', type=int) #default: 100
-    parser.add_argument('s', help='image size', type=int) #default: 1024
+    parser.add_argument('--c', help='column step', type=int, default=100)
+    parser.add_argument('--r', help='row step', type=int, default=100)
+    parser.add_argument('--s', help='image size', type=int, default=1024)
     args = parser.parse_args()
     gen_data(args.t, args.c, args.r, args.s)
