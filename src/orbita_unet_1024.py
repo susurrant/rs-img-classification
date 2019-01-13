@@ -229,11 +229,11 @@ def batch_generator(root, index, RGB, batch_size=32, horizontal_flip=True, verti
     """
     length = len(index)
     while True:
-        for i in range(batch_size, length, batch_size):
+        for i in range(batch_size, length+1, batch_size):
             img_batch, mask_batch = [], []
             for idx in range(i - batch_size, i):
-                img_path = os.path.join(root, '%d.tif' % idx)
-                gt_path = os.path.join(root, '%d_mask.tif' % idx)
+                img_path = os.path.join(root, '%d.tif' % index[idx])
+                gt_path = os.path.join(root, '%d_mask.tif' % index[idx])
 
                 img = tif.imread(img_path).astype(np.float16)
                 for c in range(num_channels):
@@ -306,13 +306,26 @@ def split_dataset(root):
     :param root: the root path of the dataset
     :return: tuple of indices of (train, validation, test)
     """
-    np.random.seed(55)
     length = int(len(os.listdir(root)) / 2)
     print('num of total img:', length)
     indices = np.random.permutation(length)
     return indices[:int(0.8*length)], \
            indices[int(0.8*length): int(0.9*length)], \
            indices[int(0.9*length):]
+
+
+def save_idx(train, validation, test, root):
+    train_file = open(os.path.join(root, 'train.txt'), 'w')
+    validation_file = open(os.path.join(root, 'validation.txt'), 'w')
+    test_file = open(os.path.join(root, 'test.txt'), 'w')
+
+    train_file.write(str(train))
+    validation_file.write(str(validation))
+    test_file.write(str(test))
+
+    train_file.close()
+    validation_file.close()
+    test_file.close()
 
 
 if __name__ == '__main__':
@@ -349,11 +362,11 @@ if __name__ == '__main__':
     RGB = category_code[args.category]
 
     train, validation, test = split_dataset(root)  # list: type - int
+    save_idx(train, validation, test, root)
 
     print('[{}] Creating and compiling model...'.format(str(datetime.datetime.now())))
 
     weight_path = "../checkpoints/%s" % args.category
-
     if not os.path.exists(weight_path):
         os.makedirs(weight_path)
     weight_path = os.path.join(weight_path, 'weights.{epoch:02d}-{val_loss:.2f}.hdf5')
