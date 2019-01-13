@@ -315,17 +315,9 @@ def split_dataset(root):
 
 
 def save_idx(train, validation, test, root):
-    train_file = open(os.path.join(root, 'train.txt'), 'w')
-    validation_file = open(os.path.join(root, 'validation.txt'), 'w')
-    test_file = open(os.path.join(root, 'test.txt'), 'w')
-
-    train_file.write(str(train))
-    validation_file.write(str(validation))
-    test_file.write(str(test))
-
-    train_file.close()
-    validation_file.close()
-    test_file.close()
+    np.savetxt(os.path.join(root, 'train.txt'), train, fmt='%d', delimiter=' ')
+    np.savetxt(os.path.join(root, 'validation.txt'), validation, fmt='%d', delimiter=' ')
+    np.savetxt(os.path.join(root, 'test.txt'), test, fmt='%d', delimiter=' ')
 
 
 if __name__ == '__main__':
