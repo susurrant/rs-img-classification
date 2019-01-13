@@ -42,6 +42,36 @@ def jaccard_coef_loss(y_true, y_pred):
     return -K.log(jaccard_coef(y_true, y_pred)) + binary_crossentropy(y_pred, y_true)
 
 
+def predict(model, image):
+    """ Predict mask of image
+
+    :param image: image in numpy array with size (H, W, Channels)
+    :return: list of binary masks in numpy array format (Categories, H, W)
+    """
+    res = _bin_mask(model.predict(image[np.newaxis, ...]))
+    mask = np.squeeze(res)
+
+    return mask
+
+def _bin_mask(image):
+    """ Clip the image into binary image
+    When pixel in [0, 0.5) => 0, else => 1
+
+    :param image: image numpy array
+    :return: binary image
+    """
+    return np.clip(image, 0, 1) >= 0.5
+
+
+def binary_accuracy(y_true, y_pred):
+    return np.sum(y_true == y_pred) / y_true.size
+
+
+def binary_recall(y_true, y_pred):
+    idx = np.where(y_true == 1)
+    return np.sum(y_true[idx] == y_pred[idx]) / y_true[idx].size
+
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('-c', '--category', help='object type', type=str, default='Building')
@@ -56,12 +86,20 @@ if __name__ == '__main__':
             u'jaccard_coef_int': jaccard_coef_int
         })
 
+    bc = 0
+    br = 0
     img_path = '../data/' + args.category
-    img = tif.imread('../0.tif').astype(np.float16)
-    for c in range(num_channels):
-        img[:, :, c] = (img[:, :, c] - img[:, :, c].min()) / (img[:, :, c].max() - img[:, :, c].min())
+    test_idx = np.loadtxt(os.path.join(img_path, 'test.txt'), dtype=np.uint16, delimiter=' ')
+    for idx in test_idx:
+        img = tif.imread(os.path.join(img_path, '%d.tif' % idx)).astype(np.float16)
+        for c in range(num_channels):
+            img[:, :, c] = (img[:, :, c] - img[:, :, c].min()) / (img[:, :, c].max() - img[:, :, c].min())
+        mask_pred = predict(model, img)
 
-    gt = img_as_ubyte(tif.imread(gt_path))  # with regard to the type of gt img
-    gt = _convert_mask(gt, RGB)
+        mask = img_as_ubyte(tif.imread(os.path.join(img_path, '%d_mask.tif' % idx))).astype(np.float16)[12:1012, 12:1012]  # with regard to the type of gt img
 
-    model.predict(img)
+        bc += binary_accuracy(mask, mask_pred)
+        br += binary_recall(mask, mask_pred)
+
+    print 'binary accuracy for test data', bc/len(test_idx)
+    print 'binary recall for test data', br/len(test_idx)
