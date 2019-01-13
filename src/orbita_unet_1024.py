@@ -307,7 +307,7 @@ def split_dataset(root):
     :return: tuple of indices of (train, validation, test)
     """
     length = int(len(os.listdir(root)) / 2)
-    print('num of total img:', length)
+    print 'num of total images:', length
     indices = np.random.permutation(length)
     return indices[:int(0.8*length)], \
            indices[int(0.8*length): int(0.9*length)], \
@@ -331,7 +331,6 @@ def save_idx(train, validation, test, root):
 if __name__ == '__main__':
     args = arg_parser()
 
-    now = datetime.datetime.now()
     mask_channel = 1
     batch_size = args.batch_size
     nb_epoch = args.num_epoch
@@ -364,7 +363,9 @@ if __name__ == '__main__':
     train, validation, test = split_dataset(root)  # list: type - int
     save_idx(train, validation, test, root)
 
-    print('[{}] Creating and compiling model...'.format(str(datetime.datetime.now())))
+    print 'category: %s' % args.category
+    print 'batch size: %d, number of epoch: %d' % (batch_size, nb_epoch)
+    print '[{}] Creating and compiling model...'.format(str(datetime.datetime.now()))
 
     weight_path = "../checkpoints/%s" % args.category
     if not os.path.exists(weight_path):

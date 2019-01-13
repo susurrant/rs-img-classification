@@ -25,7 +25,7 @@ def gen_data(obj_type, col_step, row_step, size):
         print(img)
         mask_file = img_path + img + '_' + obj_type + '.tif'
         if not os.path.exists(mask_file):
-            print('  file does not exist.')
+            print '  file does not exist.'
             continue
         mask = tifffile.imread(mask_file)
         width, height = mask.shape
