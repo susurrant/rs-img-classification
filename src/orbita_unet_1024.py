@@ -49,17 +49,17 @@ num_mask_channels = 1
 def arg_parser():
     parser = argparse.ArgumentParser()
 
-    parser.add_argument('--category', type=int, default=3,            # default is Building
+    parser.add_argument('-c', '--category', type=str, default='Building',
                         help='Choose the segmentation category')
-    parser.add_argument('--resume', type=int, default=0,
+    parser.add_argument('-r', '--resume', type=int, default=0,
                         help='resume the weights or not')
-    parser.add_argument('--weight_path', type=str, default="../checkpoints/3Building/weights.182-0.49.hdf5",
+    parser.add_argument('-w', '--weight_path', type=str, default="../checkpoints/3Building/weights.182-0.49.hdf5",
                         help='weights path to resume')
-    parser.add_argument('--lr', type=float, default=1e-1,
+    parser.add_argument('-l', '--lr', type=float, default=1e-1,
                         help='learning rate for the model')
-    parser.add_argument('--batch_size', type=int, default=4,
+    parser.add_argument('-b', '--batch_size', type=int, default=4,
                         help='batch size')
-    parser.add_argument('--num_epoch', type=int, default=8,
+    parser.add_argument('-n', '--num_epoch', type=int, default=8,
                         help='numer of epoch')
 
     return parser.parse_args()
@@ -319,11 +319,9 @@ if __name__ == '__main__':
     args = arg_parser()
 
     now = datetime.datetime.now()
-    root = '../data/Building'
     mask_channel = 1
     batch_size = args.batch_size
     nb_epoch = args.num_epoch
-    category = args.category
 
     class_names = {
         0: 'Airplane',
@@ -337,23 +335,24 @@ if __name__ == '__main__':
     }
 
     category_code = {
-        0: [255, 255, 255],
-        1: [255, 255, 0],
-        2: [0, 0, 0],
-        3: [0, 0, 255],
-        4: [0, 255, 255],
-        5: [255, 0, 255],
-        6: [0, 255, 0],
-        7: [255, 0, 0]
+        'Airplane': [255, 255, 255],
+        'Airport': [255, 255, 0],
+        'Baresoil': [0, 0, 0],
+        'Building': [0, 0, 255],
+        'Farmland': [0, 255, 255],
+        'Road': [255, 0, 255],
+        'Vegetation': [0, 255, 0],
+        'Water': [255, 0, 0]
     }
 
-    RGB = category_code[category]
+    root = '../data/' + args.category
+    RGB = category_code[args.category]
 
     train, validation, test = split_dataset(root)  # list: type - int
 
     print('[{}] Creating and compiling model...'.format(str(datetime.datetime.now())))
 
-    weight_path = "../checkpoints/%d%s" % (category, class_names[category])
+    weight_path = "../checkpoints/%s" % args.category
 
     if not os.path.exists(weight_path):
         os.makedirs(weight_path)
