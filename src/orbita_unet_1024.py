@@ -1,7 +1,7 @@
 
 from __future__ import division
 
-import os
+import os, shutil
 
 os.system('export LD_LIBRARY_PATH=/usr/local/cuda-8.0/lib64')
 os.environ['KERAS_BACKEND']='tensorflow'
@@ -368,8 +368,9 @@ if __name__ == '__main__':
     print '[{}] Creating and compiling model...'.format(str(datetime.datetime.now()))
 
     weight_path = "../checkpoints/%s" % args.category
-    if not os.path.exists(weight_path):
-        os.makedirs(weight_path)
+    shutil.rmtree(weight_path)
+    os.mkdir(weight_path)
+
     weight_path = os.path.join(weight_path, 'weights.{epoch:02d}-{val_loss:.2f}.hdf5')
     callbacks = [
         ModelCheckpoint(
