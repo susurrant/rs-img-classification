@@ -306,9 +306,10 @@ def split_dataset(root):
     :param root: the root path of the dataset
     :return: tuple of indices of (train, validation, test)
     """
-    os.remove(os.path.join(root, 'train.txt'))
-    os.remove(os.path.join(root, 'validation.txt'))
-    os.remove(os.path.join(root, 'test.txt'))
+    for fn in ['train.txt', 'validation.txt', 'test.txt']:
+        path = os.path.join(root, fn)
+        if os.path.exists(path):
+            os.remove(path)
 
     length = int(len(os.listdir(root)) / 2)
     print 'num of total images:', length
