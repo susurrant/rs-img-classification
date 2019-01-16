@@ -5,7 +5,6 @@ from keras.models import load_model
 from keras import backend as K
 from keras.backend import binary_crossentropy
 import tifffile as tif
-from skimage import img_as_ubyte
 import argparse
 
 smooth = 1e-12
@@ -53,6 +52,7 @@ def predict(model, image):
 
     return mask
 
+
 def _bin_mask(image):
     """ Clip the image into binary image
     When pixel in [0, 0.5) => 0, else => 1
@@ -63,43 +63,32 @@ def _bin_mask(image):
     return np.clip(image, 0, 1) >= 0.5
 
 
-def binary_accuracy(y_true, y_pred):
-    return np.sum(y_true == y_pred) / y_true.size
-
-
-def binary_recall(y_true, y_pred):
-    idx = np.where(y_true == 1)
-    return np.sum(y_true[idx] == y_pred[idx]) / y_true[idx].size
-
-
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('-c', '--category', help='object type', type=str, default='Building')
-    parser.add_argument('-m', '--model', help='model file', type=str, default='weights.03-2.06.hdf5')
+    parser.add_argument('-p', '--path', help='image path', type=str, default='')
+    parser.add_argument('-i', '--image', help='image file', type=str, default='')
     args = parser.parse_args()
 
-    weight_path = "../checkpoints/%s" % args.category
-    model = load_model(
-        os.path.join(weight_path, args.model),
-        custom_objects={
-            u'jaccard_coef_loss': jaccard_coef_loss,
-            u'jaccard_coef_int': jaccard_coef_int
-        })
+    categories = ['Airport', 'Baresoil', 'Building', 'Farmland', 'Road', 'Vegetation', 'Water']
+    models = []
 
-    bc = 0
-    br = 0
-    img_path = '../data/' + args.category
-    test_idx = np.loadtxt(os.path.join(img_path, 'test.txt'), dtype=np.uint16, delimiter=' ')
-    for idx in test_idx:
-        img = tif.imread(os.path.join(img_path, '%d.tif' % idx)).astype(np.float16)
-        for c in range(num_channels):
-            img[:, :, c] = (img[:, :, c] - img[:, :, c].min()) / (img[:, :, c].max() - img[:, :, c].min())
-        mask_pred = predict(model, img)
+    if args.path:
+        if args.image:  # predict one image using all models
+            for i, cate in enumerate(categories):
+                weight_path = "../checkpoints/%s" % cate
+                model = load_model(
+                    os.path.join(weight_path, models[i]),
+                    custom_objects={
+                        u'jaccard_coef_loss': jaccard_coef_loss,
+                        u'jaccard_coef_int': jaccard_coef_int
+                    })
 
-        mask = img_as_ubyte(tif.imread(os.path.join(img_path, '%d_mask.tif' % idx))).astype(np.float16)[12:1012, 12:1012]  # with regard to the type of gt img
-
-        bc += binary_accuracy(mask, mask_pred)
-        br += binary_recall(mask, mask_pred)
-
-    print 'binary accuracy for test data', bc/len(test_idx)
-    print 'binary recall for test data', br/len(test_idx)
+                img = tif.imread(os.path.join(args.path, args.image)).astype(np.float16)
+                for c in range(num_channels):
+                    img[:, :, c] = (img[:, :, c] - img[:, :, c].min()) / (img[:, :, c].max() - img[:, :, c].min())
+                mask_pred = predict(model, img)
+                tif.imsave(os.path.join('../predict', args.image[:-3]+'_'+cate+'tif'), mask_pred)
+        else:
+            print 'Please input an image name.'  # can be modified to predict all images in the directory args.path
+    else:
+        print 'Please input an image path.'
