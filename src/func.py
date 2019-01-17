@@ -42,12 +42,18 @@ def binary_accuracy(y_true, y_pred):
 
 def binary_recall(y_true, y_pred):
     idx = np.where(y_true == 1)
-    return np.sum(y_true[idx] == y_pred[idx]) / y_true[idx].size
+    if y_true[idx].size == 0:
+        return -1
+    else:
+        return np.sum(y_true[idx] == y_pred[idx]) / y_true[idx].size
 
 
 def binary_precision(y_true, y_pred):
     idx = np.where(y_pred == 1)
-    return np.sum(y_true[idx] == y_pred[idx]) / y_pred[idx].size
+    if y_pred[idx].size == 0:
+        return -1
+    else:
+        return np.sum(y_true[idx] == y_pred[idx]) / y_pred[idx].size
 
 
 def search_best_model(path):
