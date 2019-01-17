@@ -45,7 +45,7 @@ if __name__ == '__main__':
                 for c in range(num_channels):
                     img[:, :, c] = (img[:, :, c] - img[:, :, c].min()) / (img[:, :, c].max() - img[:, :, c].min())
                 mask_pred = predict(model, img)
-                tif.imsave(os.path.join('../predict', args.image[:-3]+'_'+cate+'tif'), mask_pred)
+                tif.imsave(os.path.join('../predict', args.image[:-3]+'_'+cate+'tif'), mask_pred.astype(np.uint16))
         else:
             print 'Please input an image name.'  # can be modified to predict all images in the directory args.path
     else:
