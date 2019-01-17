@@ -98,6 +98,7 @@ if __name__ == '__main__':
             if tem_loss < loss:
                 loss = tem_loss
                 model_file = fn
+        model_file = os.path.join(weight_path, model_file)
 
     model = load_model(
         model_file,
