@@ -32,6 +32,7 @@ if __name__ == '__main__':
     if args.path:
         if args.image:  # predict one image using all models
             for cate in categories:
+                print cate, 'classfication...'
                 weight_path = "../checkpoints/%s" % cate
                 model = load_model(
                     search_best_model(weight_path),
