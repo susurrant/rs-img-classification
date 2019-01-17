@@ -78,27 +78,31 @@ def binary_precision(y_true, y_pred):
     return np.sum(y_true[idx] == y_pred[idx]) / y_pred[idx].size
 
 
+def search_best_model(path):
+    pattern = re.compile(r'(?<=-)(\d+\.\d+)(?=\.)')
+    files = os.listdir(path)
+    loss = float('inf')
+    model_file = ''
+    for fn in files:
+        tem_loss = float(pattern.search(fn).group())
+        if tem_loss < loss:
+            loss = tem_loss
+            model_file = fn
+    return os.path.join(path, model_file)
+
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('-c', '--category', help='object type', type=str, default='Building')
     parser.add_argument('-m', '--model', help='model file', type=str, default='')
     args = parser.parse_args()
 
-    pattern = re.compile(r'(?<=-)(\d+\.\d+)(?=\.)')
     weight_path = "../checkpoints/%s" % args.category
 
     if args.model:
         model_file = os.path.join(weight_path, args.model)
     else:
-        files = os.listdir(weight_path)
-        loss = float('inf')
-        model_file = ''
-        for fn in files:
-            tem_loss = float(pattern.search(fn).group())
-            if tem_loss < loss:
-                loss = tem_loss
-                model_file = fn
-        model_file = os.path.join(weight_path, model_file)
+        model_file = search_best_model(weight_path)
 
     model = load_model(
         model_file,
@@ -107,7 +111,7 @@ if __name__ == '__main__':
             u'jaccard_coef_int': jaccard_coef_int
         })
 
-    ba = 0
+    br = 0
     bp = 0
     img_path = '../data/' + args.category
     test_idx = np.loadtxt(os.path.join(img_path, 'test.txt'), dtype=np.uint16, delimiter=' ')
@@ -119,8 +123,8 @@ if __name__ == '__main__':
 
         mask = img_as_ubyte(tif.imread(os.path.join(img_path, '%d_mask.tif' % idx))).astype(np.float16)[12:1012, 12:1012]  # with regard to the type of gt img
 
-        ba += binary_accuracy(mask, mask_pred)
-        bp += binary_recall(mask, mask_pred)
+        br += binary_recall(mask, mask_pred)
+        bp += binary_precision(mask, mask_pred)
 
-    print 'binary precision for test data', bp/len(test_idx)
-    print 'binary recall for test data', ba/len(test_idx)
+    print 'binary precision for test data:', bp/len(test_idx)
+    print 'binary recall for test data:', br/len(test_idx)

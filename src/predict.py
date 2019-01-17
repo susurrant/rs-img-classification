@@ -1,4 +1,6 @@
+
 from __future__ import division
+
 import os
 import numpy as np
 from keras.models import load_model
@@ -6,6 +8,7 @@ from keras import backend as K
 from keras.backend import binary_crossentropy
 import tifffile as tif
 import argparse
+import re
 
 smooth = 1e-12
 K.set_image_dim_ordering('tf')
@@ -63,6 +66,20 @@ def _bin_mask(image):
     return np.clip(image, 0, 1) >= 0.5
 
 
+def search_best_model(path):
+    pattern = re.compile(r'(?<=-)(\d+\.\d+)(?=\.)')
+    files = os.listdir(path)
+    loss = float('inf')
+    model_file = ''
+    for fn in files:
+        tem_loss = float(pattern.search(fn).group())
+        if tem_loss < loss:
+            loss = tem_loss
+            model_file = fn
+    return os.path.join(path, model_file)
+
+
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('-p', '--path', help='image path', type=str, default='')
@@ -70,14 +87,13 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     categories = ['Airport', 'Baresoil', 'Building', 'Farmland', 'Road', 'Vegetation', 'Water']
-    models = []
 
     if args.path:
         if args.image:  # predict one image using all models
-            for i, cate in enumerate(categories):
+            for cate in categories:
                 weight_path = "../checkpoints/%s" % cate
                 model = load_model(
-                    os.path.join(weight_path, models[i]),
+                    search_best_model(weight_path),
                     custom_objects={
                         u'jaccard_coef_loss': jaccard_coef_loss,
                         u'jaccard_coef_int': jaccard_coef_int
