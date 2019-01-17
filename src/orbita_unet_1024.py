@@ -211,7 +211,7 @@ def batch_generator(root, index, RGB, batch_size=32, horizontal_flip=True, verti
                 for c in range(num_channels):
                     img[:,:,c] = (img[:,:,c] - img[:,:,c].min()) / (img[:,:,c].max() - img[:,:,c].min()) # normalization
 
-                gt = img_as_ubyte(tif.imread(gt_path))  # with regard to the type of gt img
+                gt = img_as_ubyte(tif.imread(gt_path))  # with regard to the type of real img
                 gt = _convert_mask(gt, RGB)
 
                 if horizontal_flip:
