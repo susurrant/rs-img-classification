@@ -19,7 +19,6 @@ import keras
 from keras.layers.normalization import BatchNormalization
 from keras.optimizers import Nadam
 import pandas as pd
-from keras.backend import binary_crossentropy
 
 import datetime
 import random
@@ -32,6 +31,8 @@ K.set_image_dim_ordering('tf')
 
 import numpy as np
 from keras.models import load_model
+
+from func import jaccard_coef_loss, jaccard_coef_int
 
 img_rows = 1024
 img_cols = 1024
@@ -58,30 +59,6 @@ def arg_parser():
                         help='numer of epoch')
 
     return parser.parse_args()
-
-
-def jaccard_coef(y_true, y_pred):
-    intersection = K.sum(y_true * y_pred, axis=[0, -1, -2])
-    sum_ = K.sum(y_true + y_pred, axis=[0, -1, -2])
-
-    jac = (intersection + smooth) / (sum_ - intersection + smooth)
-
-    return K.mean(jac)
-
-
-def jaccard_coef_int(y_true, y_pred):
-    y_pred_pos = K.round(K.clip(y_pred, 0, 1))
-
-    intersection = K.sum(y_true * y_pred_pos, axis=[0, -1, -2])
-    sum_ = K.sum(y_true + y_pred_pos, axis=[0, -1, -2])
-
-    jac = (intersection + smooth) / (sum_ - intersection + smooth)
-
-    return K.mean(jac)
-
-
-def jaccard_coef_loss(y_true, y_pred):
-    return -K.log(jaccard_coef(y_true, y_pred)) + binary_crossentropy(y_pred, y_true)
 
 
 def get_unet0():
