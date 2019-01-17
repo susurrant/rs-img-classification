@@ -79,7 +79,6 @@ def search_best_model(path):
     return os.path.join(path, model_file)
 
 
-
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('-p', '--path', help='image path', type=str, default='')

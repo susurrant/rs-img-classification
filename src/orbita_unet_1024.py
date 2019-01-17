@@ -40,11 +40,6 @@ num_channels = 3
 smooth = 1e-12
 num_mask_channels = 1
 
-##############################################################
-# best weights:
-# ../checkpoints/0Building/weights.182-0.49.hdf5
-# ../checkpoints/1Tree/weights.160-0.78.hdf5
-#
 
 def arg_parser():
     parser = argparse.ArgumentParser()

@@ -116,15 +116,18 @@ if __name__ == '__main__':
     bp = 0
     img_path = '../data/' + args.category
     test_idx = np.loadtxt(os.path.join(img_path, 'test.txt'), dtype=np.uint16, delimiter=' ')
-    for idx in tqdm.tqdm(test_idx):
+    for idx in test_idx:
         img = tif.imread(os.path.join(img_path, '%d.tif' % idx)).astype(np.float16)
         for c in range(num_channels):
             img[:, :, c] = (img[:, :, c] - img[:, :, c].min()) / (img[:, :, c].max() - img[:, :, c].min())
 
         mask_pred = predict(model, img)
         mask = img_as_ubyte(tif.imread(os.path.join(img_path, '%d_mask.tif' % idx))).astype(np.float16)[12:1012, 12:1012]  # with regard to the output size
-        br += binary_recall(mask, mask_pred)
-        bp += binary_precision(mask, mask_pred)
+        r = binary_recall(mask, mask_pred)
+        br += r
+        p = binary_precision(mask, mask_pred)
+        bp += p
+        print 'idx', r, p
 
     print 'binary precision for test data:', bp/len(test_idx)
     print 'binary recall for test data:', br/len(test_idx)
