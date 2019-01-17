@@ -81,7 +81,7 @@ def binary_precision(y_true, y_pred):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('-c', '--category', help='object type', type=str, default='Building')
-    parser.add_argument('-m', '--model', help='model file', type=str, default='weights.06-0.94.hdf5')
+    parser.add_argument('-m', '--model', help='model file', type=str, default='')
     args = parser.parse_args()
 
     pattern = re.compile(r'(?<=-)(\d+\.\d+)(?=\.)')
