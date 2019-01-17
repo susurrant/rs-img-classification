@@ -49,7 +49,7 @@ if __name__ == '__main__':
     l = 0
     img_path = '../data/' + args.category
     test_idx = np.loadtxt(os.path.join(img_path, 'test.txt'), dtype=np.uint16, delimiter=' ')
-    for idx in tqdm.tqdm(test_idx):
+    for idx in test_idx:
         img = tif.imread(os.path.join(img_path, '%d.tif' % idx)).astype(np.float16)
         for c in range(num_channels):
             img[:, :, c] = (img[:, :, c] - img[:, :, c].min()) / (img[:, :, c].max() - img[:, :, c].min())
@@ -62,6 +62,7 @@ if __name__ == '__main__':
             br += r
             bp += p
             l += 1
+            print idx, r, p
 
     print 'binary precision for test data:', bp/l
     print 'binary recall for test data:', br/l
