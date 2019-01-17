@@ -8,6 +8,7 @@ import tifffile as tif
 from skimage import img_as_ubyte
 import argparse
 import re
+import tqdm
 
 smooth = 1e-12
 K.set_image_dim_ordering('tf')
@@ -115,14 +116,13 @@ if __name__ == '__main__':
     bp = 0
     img_path = '../data/' + args.category
     test_idx = np.loadtxt(os.path.join(img_path, 'test.txt'), dtype=np.uint16, delimiter=' ')
-    for idx in test_idx:
+    for idx in tqdm.tqdm(test_idx):
         img = tif.imread(os.path.join(img_path, '%d.tif' % idx)).astype(np.float16)
         for c in range(num_channels):
             img[:, :, c] = (img[:, :, c] - img[:, :, c].min()) / (img[:, :, c].max() - img[:, :, c].min())
+
         mask_pred = predict(model, img)
-
-        mask = img_as_ubyte(tif.imread(os.path.join(img_path, '%d_mask.tif' % idx))).astype(np.float16)[12:1012, 12:1012]  # with regard to the type of gt img
-
+        mask = img_as_ubyte(tif.imread(os.path.join(img_path, '%d_mask.tif' % idx))).astype(np.float16)[12:1012, 12:1012]  # with regard to the output size
         br += binary_recall(mask, mask_pred)
         bp += binary_precision(mask, mask_pred)
 
