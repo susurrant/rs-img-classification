@@ -1,5 +1,6 @@
 # rs-img-classification
 classification of remote sensing images.</br>
+
 ## Development enviroment
 1. Operation system: Ubuntu 16.04.3 LTS</br>
 2. CUDA version: 8.0</br>
@@ -7,10 +8,15 @@ classification of remote sensing images.</br>
    Modules: </br>
    tensorflow-gpu==1.4.1, scikit-image==0.13.0, tifffile==0.13.5,</br>
    pandas==0.20.3, keras==1.2.2, h5py==2.7.0, tqdm== 4.19.4</br>
+   
 ## Model
-Reference: [kaggle-dstl 3rd blog](http://blog.kaggle.com/2017/05/09/dstl-satellite-imagery-competition-3rd-place-winners-interview-vladimir-sergey/)</br>
+- Reference: [kaggle-dstl 3rd blog](http://blog.kaggle.com/2017/05/09/dstl-satellite-imagery-competition-3rd-place-winners-interview-vladimir-sergey/)</br>
+- Framework:</br>
 ![Model structure](screenshots/model.jpg)</br>
+- Input and output: 1024\*1024\*3 (in), 1000\*1000\*1 (out), row\*column\*channel
+
 ## Result
+left: image, middle: ground truth(label), right: prediction</br>
 1. Airport
 ![airport238](screenshots/airport238.JPG)</br>
 ![airport238](screenshots/airport352.JPG)</br>
