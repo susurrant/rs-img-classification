@@ -1,5 +1,5 @@
 # rs-img-classification
-classification of remote sensing images.</br>
+Semantic segmentation of remote sensing images.</br>
 
 ## Development enviroment
 1. Operation system: Ubuntu 16.04.3 LTS</br>
